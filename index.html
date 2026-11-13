@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluasi Teknik Persidangan MPK - MTs Al Hidayah Sukatani</title>
+<style>
+:root{--green:#08783e;--dark:#07552f;--gold:#f2c744;--pale:#f3fbf5;--ink:#183326;--muted:#64756b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#e9f7ed,#fff9e8);color:var(--ink);line-height:1.5}
+header{background:linear-gradient(120deg,var(--dark),#0b8a49);color:white;padding:28px 18px;text-align:center;border-bottom:6px solid var(--gold)}
+header .tag{display:inline-block;background:#ffffff20;border:1px solid #ffffff70;border-radius:30px;padding:5px 14px;font-size:13px;letter-spacing:.4px}
+header h1{margin:12px 0 4px;font-size:clamp(23px,4vw,34px)}
+header p{margin:0;color:#e8f6ed}
+.container{max-width:900px;margin:24px auto;padding:0 14px 40px}
+.panel{background:white;border:1px solid #d7e8dc;border-radius:16px;padding:20px;margin-bottom:18px;box-shadow:0 5px 18px #174a2a12}
+h2{font-size:20px;color:var(--dark);margin:0 0 14px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+input,select{width:100%;padding:12px;border:1px solid #b9cfc0;border-radius:9px;font-size:16px;background:#fff;color:var(--ink)}
+.instructions{font-size:14px;color:var(--muted);margin:8px 0 0}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:#eff8f1;border-radius:12px;padding:12px 15px;margin-bottom:16px}
+.timer{font-weight:800;color:var(--dark);font-variant-numeric:tabular-nums;font-size:19px}
+.progress-wrap{height:9px;background:#e6eee8;border-radius:10px;overflow:hidden;flex:1;min-width:120px}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#0b8b49,#e9bd35);transition:width .2s}
+.question{border:1px solid #e0ebe3;border-radius:13px;padding:16px;margin:13px 0}
+.question h3{font-size:16px;margin:0 0 12px}
+.qnum{display:inline-flex;align-items:center;justify-content:center;background:var(--green);color:white;border-radius:50%;width:28px;height:28px;font-size:14px;margin-right:7px}
+.option{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-radius:8px;margin:5px 0;cursor:pointer;border:1px solid transparent}
+.option:hover{background:#f2faf4;border-color:#d6eadc}
+.option input{width:auto;margin-top:4px;accent-color:var(--green)}
+button{border:0;border-radius:10px;padding:13px 20px;font-size:15px;font-weight:700;cursor:pointer}
+.primary{background:var(--green);color:white}
+.primary:hover{background:var(--dark)}
+.secondary{background:#edf4ef;color:var(--dark);border:1px solid #cbded0}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-top:18px}
+.hidden{display:none!important}
+.result{text-align:center}
+.score{font-size:54px;font-weight:900;color:var(--green);line-height:1.15;margin:12px 0}
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}
+.stat{background:#f0f8f2;border-radius:12px;padding:14px}
+.stat strong{display:block;font-size:23px;color:var(--dark)}
+.stat span{font-size:13px;color:var(--muted)}
+.review{text-align:left;margin-top:20px}
+.review-item{padding:12px;border-radius:9px;margin:8px 0;background:#f7faf7;border-left:4px solid #b7c9bc}
+.review-item.correct{border-left-color:#159653}
+.review-item.wrong{border-left-color:#d34a43}
+.small{font-size:13px;color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:12px}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}.result-grid{grid-template-columns:1fr}.panel{padding:15px}.actions button{width:100%}}
+@media print{body{background:white}.no-print,header{display:none!important}.panel{box-shadow:none;border:0}.container{margin:0;max-width:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="tag">MAJELIS PERWAKILAN KELAS (MPK)</div>
+  <h1>Evaluasi Teknik Persidangan MPK</h1>
+  <p>MTs Al Hidayah Sukatani</p>
+</header>
+<main class="container">
+  <section class="panel" id="identity">
+    <h2>Identitas Peserta</h2>
+    <div class="form-grid">
+      <div><label for="studentName">Nama lengkap</label><input id="studentName" type="text" placeholder="Masukkan nama lengkap"></div>
+      <div><label for="studentClass">Kelas</label>
+        <select id="studentClass"><option value="">Pilih kelas</option><option>VII</option><option>VIII</option><option>IX</option></select>
+      </div>
+    </div>
+    <p class="instructions">Petunjuk: Pilih satu jawaban yang paling tepat pada setiap soal. Waktu mulai dihitung saat tombol “Mulai Mengerjakan” ditekan.</p>
+    <div class="actions no-print"><span class="small">Jumlah soal: 25 • Nilai maksimal: 100</span><button class="primary" id="startBtn">Mulai Mengerjakan</button></div>
+  </section>
+
+  <section class="panel hidden" id="quizPanel">
+    <div class="topbar">
+      <div class="timer">Waktu: <span id="timer">00:00</span></div>
+      <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+      <div class="small"><span id="answered">0</span>/25 dijawab</div>
+    </div>
+    <div id="questions"></div>
+    <div class="actions no-print">
+      <span class="small">Pastikan semua soal telah dijawab sebelum mengakhiri tes.</span>
+      <button class="primary" id="finishBtn">Selesaikan dan Lihat Hasil</button>
+    </div>
+  </section>
+
+  <section class="panel hidden result" id="resultPanel">
+    <h2>Hasil Evaluasi Peserta</h2>
+    <div class="small" id="resultName"></div>
+    <div class="score" id="score">0</div>
+    <div id="category" style="font-weight:800;color:#07552f;font-size:18px"></div>
+    <div class="result-grid">
+      <div class="stat"><strong id="correctCount">0</strong><span>Jawaban benar</span></div>
+      <div class="stat"><strong id="wrongCount">0</strong><span>Jawaban salah</span></div>
+      <div class="stat"><strong id="elapsed">00:00</strong><span>Waktu pengerjaan</span></div>
+    </div>
+    <p id="resultMessage"></p>
+    <div class="actions no-print" style="justify-content:center">
+      <button class="secondary" onclick="window.print()">Cetak Hasil</button>
+      <button class="primary" onclick="location.reload()">Ulangi Tes</button>
+    </div>
+    <div class="review" id="review"></div>
+  </section>
+  <footer>Evaluasi Pembekalan dan Pelatihan Teknik Persidangan MPK • MTs Al Hidayah Sukatani</footer>
+</main>
+<script>
+const data = [
+{q:"Apa yang dimaksud dengan persidangan MPK?",o:["Pertemuan untuk bermain dan bercanda","Forum resmi untuk membahas masalah dan mengambil keputusan organisasi","Kegiatan untuk memilih siswa berprestasi","Pertemuan khusus pengurus OSIS"],a:1},
+{q:"Apa tujuan utama dilaksanakannya sidang MPK?",o:["Mencari siapa yang paling berkuasa","Menghindari tanggung jawab organisasi","Membahas persoalan, menampung aspirasi, dan mengambil keputusan","Menentukan siswa yang paling populer"],a:2},
+{q:"Prinsip utama yang harus dikedepankan dalam persidangan adalah ....",o:["Memaksakan kehendak","Musyawarah mufakat","Kepentingan pribadi","Persaingan antarkelas"],a:1},
+{q:"Siapakah yang bertugas memimpin dan mengendalikan jalannya persidangan?",o:["Notulis","Peserta sidang","Pimpinan sidang","Panitia konsumsi"],a:2},
+{q:"Apa tugas utama Pimpinan Sidang II?",o:["Menggantikan dan membantu Pimpinan Sidang I apabila diperlukan","Membuat seluruh program OSIS","Mengatur konsumsi peserta","Menentukan hasil voting sendiri"],a:0},
+{q:"Apa yang dimaksud dengan peserta sidang?",o:["Orang yang hanya menyiapkan ruangan","Orang yang mengikuti persidangan dengan hak dan kewajiban sesuai tata tertib","Orang yang selalu menjadi pimpinan sidang","Orang yang bertugas mengetuk palu"],a:1},
+{q:"Apa yang dimaksud dengan presidium sidang?",o:["Kelompok panitia konsumsi","Kelompok peserta yang melakukan voting","Kelompok pimpinan yang memimpin jalannya persidangan","Kelompok siswa yang menyampaikan laporan OSIS"],a:2},
+{q:"Siapa yang bertugas mencatat jalannya persidangan dan hasil keputusan?",o:["Sekretaris sidang atau notulis","Petugas keamanan","Ketua kelas saja","Seluruh peserta secara bersamaan"],a:0},
+{q:"Apa fungsi agenda sidang?",o:["Menentukan seragam peserta","Mengatur daftar makanan","Menentukan siapa yang boleh berbicara","Menjadi urutan materi yang akan dibahas dalam sidang"],a:3},
+{q:"Apa yang dimaksud dengan tata tertib sidang?",o:["Daftar nama seluruh siswa","Aturan yang menjadi pedoman selama persidangan","Laporan kegiatan OSIS","Susunan acara hiburan"],a:1},
+{q:"Sidang yang diikuti seluruh peserta untuk membahas agenda utama disebut ....",o:["Sidang Komisi","Sidang Istimewa","Sidang Pleno","Sidang Pribadi"],a:2},
+{q:"Sidang yang dilakukan oleh kelompok kecil untuk membahas bidang tertentu disebut ....",o:["Sidang Komisi","Sidang Paripurna","Sidang Istimewa","Sidang Umum"],a:0},
+{q:"Sidang yang dilaksanakan karena adanya keadaan atau kepentingan khusus disebut ....",o:["Sidang Komisi","Sidang Istimewa","Sidang Rutin","Sidang Kelas"],a:1},
+{q:"Apa yang dimaksud dengan kuorum?",o:["Jumlah panitia yang hadir","Jumlah seluruh pengurus OSIS","Jumlah minimum peserta yang harus hadir sesuai ketentuan agar sidang dapat dilaksanakan atau mengambil keputusan","Jumlah peserta yang menyampaikan pendapat"],a:2},
+{q:"Jika jumlah peserta yang memiliki hak suara 60 orang dan kuorum ditetapkan 2/3, berapa jumlah minimum kehadiran?",o:["20 orang","30 orang","36 orang","40 orang"],a:3},
+{q:"Bagaimana cara yang tepat untuk menyampaikan pendapat dalam sidang?",o:["Berteriak agar didengar","Mengangkat tangan, meminta izin, menyebutkan identitas, lalu menyampaikan pendapat","Memotong pembicaraan pimpinan","Berbicara tanpa memperhatikan agenda"],a:1},
+{q:"Apa yang harus dilakukan ketika ingin menyampaikan kritik kepada pengurus OSIS?",o:["Menyerang pribadi pengurus","Menggunakan kata-kata kasar","Menyampaikan kritik secara santun disertai alasan dan solusi","Mempermalukan pengurus di depan peserta"],a:2},
+{q:"Interupsi Point of Order digunakan untuk ....",o:["Meminta penjelasan materi","Menyampaikan informasi tambahan","Mengajukan pertanyaan","Mengingatkan pimpinan atau peserta tentang tata tertib dan prosedur sidang"],a:3},
+{q:"Interupsi Clarification digunakan ketika peserta ingin ....",o:["Meminta penjelasan atau memperjelas suatu pernyataan","Meminta sidang ditutup","Menyampaikan pembelaan pribadi","Mengajukan pemungutan suara"],a:0},
+{q:"Interupsi Information digunakan untuk ....",o:["Menghentikan sidang selamanya","Menyampaikan informasi penting yang berkaitan dengan pembahasan","Membela nama baik pribadi","Menolak semua usulan"],a:1},
+{q:"Interupsi Personal Privilege digunakan apabila ....",o:["Peserta ingin mengusulkan program baru","Peserta ingin meminta waktu istirahat","Peserta merasa hak atau kehormatan pribadinya terganggu","Peserta ingin bertanya tentang agenda"],a:2},
+{q:"Apa yang dimaksud dengan voting?",o:["Pemungutan suara untuk mengambil keputusan","Pembacaan agenda sidang","Penyampaian laporan komisi","Penundaan pembahasan"],a:0},
+{q:"Dalam tata cara ketukan palu yang disepakati untuk pelatihan MPK, dua kali ketukan digunakan untuk ....",o:["Mengesahkan keputusan","Membuka sidang","Menutup sidang","Melakukan atau mencabut skorsing"],a:3},
+{q:"Dalam tata cara ketukan palu yang disepakati, tiga kali ketukan digunakan untuk ....",o:["Menyampaikan interupsi","Membuka atau menutup sidang secara resmi","Melakukan voting","Memanggil peserta"],a:1},
+{q:"Apa yang harus dilakukan apabila musyawarah belum menghasilkan kesepakatan?",o:["Pimpinan memaksakan pendapatnya","Mengabaikan pendapat peserta","Melanjutkan musyawarah atau melakukan voting sesuai tata tertib","Langsung membubarkan forum"],a:2}
+];
+let startedAt=0, timerHandle=null, finished=false;
+const $=id=>document.getElementById(id);
+function formatTime(seconds){const m=Math.floor(seconds/60),s=seconds%60;return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+function updateTimer(){if(!startedAt||finished)return;$('timer').textContent=formatTime(Math.floor((Date.now()-startedAt)/1000))}
+function updateProgress(){const n=document.querySelectorAll('input[type=radio]:checked').length;$('answered').textContent=n;$('progress').style.width=(n/25*100)+'%'}
+function renderQuestions(){
+  $('questions').innerHTML=data.map((item,i)=>`<article class="question"><h3><span class="qnum">${i+1}</span>${item.q}</h3>${item.o.map((opt,j)=>`<label class="option"><input type="radio" name="q${i}" value="${j}"><span><b>${'ABCD'[j]}.</b> ${opt}</span></label>`).join('')}</article>`).join('');
+  document.querySelectorAll('input[type=radio]').forEach(el=>el.addEventListener('change',updateProgress));
+}
+$('startBtn').addEventListener('click',()=>{
+  if(!$('studentName').value.trim()){alert('Silakan isi nama lengkap terlebih dahulu.');$('studentName').focus();return}
+  if(!$('studentClass').value){alert('Silakan pilih kelas terlebih dahulu.');$('studentClass').focus();return}
+  $('identity').classList.add('hidden');$('quizPanel').classList.remove('hidden');
+  startedAt=Date.now();renderQuestions();timerHandle=setInterval(updateTimer,1000);window.scrollTo({top:0,behavior:'smooth'});
+});
+$('finishBtn').addEventListener('click',()=>{
+  const answered=document.querySelectorAll('input[type=radio]:checked').length;
+  if(answered<25&&!confirm(`Masih ada ${25-answered} soal yang belum dijawab. Tetap selesaikan tes?`))return;
+  finishQuiz();
+});
+function finishQuiz(){
+  if(finished)return;finished=true;clearInterval(timerHandle);
+  const elapsedSeconds=Math.floor((Date.now()-startedAt)/1000);
+  let correct=0,reviewHTML='';
+  data.forEach((item,i)=>{
+    const selected=document.querySelector(`input[name="q${i}"]:checked`);
+    const value=selected?Number(selected.value):-1;
+    const ok=value===item.a;if(ok)correct++;
+    reviewHTML+=`<div class="review-item ${ok?'correct':'wrong'}"><b>${i+1}. ${item.q}</b><br><span>${ok?'Benar':'Belum tepat'}.</span> Jawaban benar: <b>${'ABCD'[item.a]}. ${item.o[item.a]}</b>${value<0?'<br><span class="small">Tidak dijawab.</span>':''}</div>`;
+  });
+  const score=correct*4;
+  let category=score>=90?'Sangat Baik':score>=80?'Baik':score>=70?'Cukup':'Perlu Pembinaan';
+  $('quizPanel').classList.add('hidden');$('resultPanel').classList.remove('hidden');
+  $('resultName').textContent=`Nama: ${$('studentName').value.trim()} • Kelas: ${$('studentClass').value}`;
+  $('score').textContent=score;$('category').textContent=category;
+  $('correctCount').textContent=correct;$('wrongCount').textContent=25-correct;
+  $('elapsed').textContent=formatTime(elapsedSeconds);
+  $('resultMessage').textContent=score>=80?'Selamat! Pemahaman Anda terhadap materi teknik persidangan MPK sudah baik.': 'Terus berlatih dan pelajari kembali materi teknik persidangan MPK agar pemahaman semakin meningkat.';
+  $('review').innerHTML='<h2>Ulasan Jawaban</h2>'+reviewHTML;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
